@@ -301,7 +301,151 @@ python modules/module_0_directory.py --test
 
 ---
 
-## 🚀 Quick Start Guide
+## 🔄 Resumption Instructions
+
+### **Quick Resume After Break (5 minutes)**
+
+If you're returning to the project after a break, follow these steps to get back up and running:
+
+#### 1. **Activate Environment**
+```bash
+cd /Users/pranav/coding/blockchain_job_tracker
+source blockchain_job_tracker/venv/bin/activate
+python --version  # Should show Python 3.10.18
+```
+
+#### 2. **Verify Dependencies**
+```bash
+pip list | grep -E "(openai|httpx|requests|pandas)"
+# Should show: openai==1.12.0, httpx==0.24.1, requests==2.32.4, pandas==2.1.4
+```
+
+#### 3. **Test Core Modules**
+```bash
+# Test Module 0 (Accelerator Discovery)
+python modules/module_0_directory.py --test
+
+# Test Module 0.5 (Validation)
+python modules/module_0_5_validator.py --test
+
+# Test Module 1 (Job Scraping)
+python modules/module_1_scraper.py --test
+
+# Test Module 2 (AI Job Matcher)
+python modules/module_2_matcher.py --test
+```
+
+#### 4. **Check System Status**
+```bash
+# Verify data files exist
+ls -la data/*.csv
+
+# Check recent logs
+tail -n 10 data/system_logs.csv
+
+# Verify configuration
+cat config/cmf_profile.json | head -5
+```
+
+### **Troubleshooting Common Resume Issues**
+
+#### **Issue: Virtual Environment Not Found**
+```bash
+# Recreate virtual environment with Python 3.10
+rm -rf blockchain_job_tracker/venv
+python3.10 -m venv blockchain_job_tracker/venv
+source blockchain_job_tracker/venv/bin/activate
+pip install -r blockchain_job_tracker/requirements.txt
+```
+
+#### **Issue: OpenAI Import Error**
+```bash
+# Fix httpx compatibility issue
+pip uninstall httpx -y
+pip install httpx==0.24.1
+python -c "import openai; client = openai.OpenAI(api_key='test'); print('✅ OpenAI working')"
+```
+
+#### **Issue: Module Import Errors**
+```bash
+# Ensure you're in the correct directory
+pwd  # Should show: /Users/pranav/coding/blockchain_job_tracker
+python -c "import sys; print(sys.path)"  # Check Python path
+```
+
+#### **Issue: API Key Errors**
+```bash
+# Check .env file
+cat .env | grep -E "(OPENAI|GOOGLE)" | head -3
+
+# Test API connectivity
+python -c "from dotenv import load_dotenv; import os; load_dotenv(); print('OpenAI Key:', '✅' if os.getenv('OPENAI_API_KEY') else '❌')"
+```
+
+### **Current Project Status (Last Updated: June 2025)**
+
+#### **✅ Working Modules:**
+- **Module 0**: Accelerator discovery via Google CSE
+- **Module 0.5**: Accelerator validation and health scoring
+- **Module 1**: Job scraping from validated sources
+- **Module 2**: AI-powered job matching (OpenAI integration)
+
+#### **🔄 In Development:**
+- **Module 3**: Email alert system
+- **Module 4**: Streamlit dashboard
+- **UI**: Interactive web interface
+
+#### **📊 Data Status:**
+- **Accelerators**: 170+ entries in `data/accelerators_list.csv`
+- **Active Accelerators**: 15-25 validated and ready for scraping
+- **Jobs**: Varies based on active accelerator availability
+- **AI Matching**: Fully functional with fallback analysis
+
+#### **🔧 Environment:**
+- **Python**: 3.10.18 (virtual environment)
+- **Key Dependencies**: 
+  - openai==1.12.0
+  - httpx==0.24.1 (compatibility fix)
+  - pandas==2.1.4
+  - requests==2.32.4
+- **APIs**: Google CSE, OpenAI (quota-aware)
+
+### **Next Development Steps**
+
+#### **Immediate Priorities:**
+1. **Complete Module 3**: Email alert system
+2. **Build Module 4**: Streamlit dashboard
+3. **Add real job data**: Run Module 1 with active accelerators
+4. **Test full pipeline**: End-to-end workflow validation
+
+#### **Testing Strategy:**
+```bash
+# Run comprehensive test suite
+python modules/module_0_directory.py --test
+python modules/module_0_5_validator.py --test
+python modules/module_1_scraper.py --test
+python modules/module_2_matcher.py --test
+
+# Check results
+ls -la data/*.csv
+cat data/system_logs.csv | tail -20
+```
+
+#### **Git Workflow:**
+```bash
+# Before starting work
+git status
+git pull origin main
+
+# After making changes
+git add .
+git commit -m "Description of changes"
+git push origin main
+```
+
+---
+
+## �� Quick Start Guide
 
 ### **Initial Setup:**
 ```bash
