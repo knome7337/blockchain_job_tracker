@@ -40,12 +40,12 @@ class AIJobMatcher:
         self.daily_cost_limit = float(os.getenv('DAILY_AI_COST_LIMIT', '5.0'))  # $5 default
         self.current_session_cost = 0.0
         
-        # Initialize OpenAI client
+        # Initialize OpenAI client (OpenAI v1.x compatible)
         api_key = os.getenv('OPENAI_API_KEY')
         if not api_key:
             raise ValueError("OPENAI_API_KEY not found in environment variables")
         
-        self.client = openai.OpenAI(api_key=api_key)
+        self.client = openai.OpenAI(api_key=api_key)  # v1.x: only api_key argument supported
         
         # Load CMF profile
         self.cmf_profile = self.load_cmf_profile()

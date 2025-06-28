@@ -1,15 +1,21 @@
 {
-  "roles": ["Chief of Staff", "Director of Strategy", "Grant Manager"],
-  "skills": [
+  "candidate_info": {
+    "experience_level": "senior",
+    "years_experience": "8"
+  },
+  "preferred_roles": ["Chief of Staff", "Director of Strategy", "Grant Manager"],
+  "technical_skills": [
     "Blockchain for climate impact",
     "Startup GTM",
     "Community building", 
     "Strategic leadership"
   ],
   "industries": ["Blockchain", "Climate Tech", "Sustainable Fashion"],
-  "locations": ["Mumbai", "Remote"],
+  "location_preferences": {
+    "preferred": ["Mumbai", "Remote"],
+    "acceptable": ["India", "Europe", "North America"]
+  },
   "values": ["Autonomy", "Impact", "Frugality", "Fast execution"],
-  "experience_level": "senior",
   "company_stage": ["Series A", "Series B", "Growth"],
   "deal_breakers": ["No remote option", "Pure technical role", "Corporate bureaucracy"],
   "nice_to_have": ["Equity participation", "International team", "Climate focus"]
