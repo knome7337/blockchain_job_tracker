@@ -1,76 +1,517 @@
 # 🚀 Blockchain Job Tracker
 
-This project is an automated job tracker designed to find and validate senior-level strategic roles (like Chief of Staff, Director of Strategy, and Grant Manager) in niche, high-impact sectors: **Blockchain**, **Climate Tech**, and **Sustainable Fashion**. It focuses on opportunities in **Mumbai** and **remote** settings.
+An **intelligent job discovery system** that automatically finds, validates, and matches relevant opportunities from **blockchain, climate, and AI accelerators** across Europe and India. The system uses AI-powered matching against your personal Candidate-Market Fit (CMF) profile and delivers curated weekly email alerts.
 
 ## 🎯 Project Goal
 
-The primary goal is to automate the discovery, filtering, and validation of job openings that align with a specific candidate profile (`config/cmf_profile.json`). The system identifies potential roles from across the web, validates them against strict criteria (roles, skills, industry, location, deal-breakers), and prepares a clean, high-quality list of opportunities, saving significant manual search time.
+**Primary Objective:** Automate the discovery and intelligent filtering of high-quality job opportunities from 100+ blockchain, climate tech, and AI accelerators, eliminating manual search time while ensuring no relevant opportunities are missed.
 
-## 📂 Project Structure
+**Target Outcome:** Weekly email alerts containing 5-10 highly relevant, AI-scored job matches with detailed reasoning, sourced from validated accelerators across Europe and India.
+
+### **Core Problem Solved:**
+- **Manual Inefficiency:** Searching 100+ accelerator websites is time-consuming
+- **Missed Opportunities:** Lesser-known but high-quality accelerators often overlooked  
+- **Information Overload:** Need intelligent filtering and relevance scoring
+- **Inconsistent Monitoring:** Job opportunities appear and disappear quickly
+
+---
+
+## 🏗️ Project Architecture
 
 ```
 blockchain_job_tracker/
-├── venv/                    # Virtual environment (ignored by Git)
-├── data/                    # Generated data and logs (ignored by Git)
-│   ├── accelerators_list.csv
-│   └── system_logs.csv
-├── config/
-│   └── cmf_profile.json     # Your candidate profile
-├── modules/
-│   ├── __init__.py
-│   ├── module_0_directory.py
-│   └── module_0_5_validator.py
-├── ui/                      # For future Streamlit app
-├── tests/                   # For future tests
-├── .env                     # API keys and secrets (ignored by Git)
-├── .gitignore               # Specifies files for Git to ignore
-├── requirements.txt         # Python dependencies
-└── README.md                # This file
+├── 📁 modules/                 # Core processing pipeline
+│   ├── module_0_directory.py       # Accelerator discovery via Google CSE
+│   ├── module_0_5_validator.py     # Accelerator validation & health scoring
+│   ├── module_1_scraper.py         # Job scraping from validated sources
+│   ├── module_2_matcher.py         # AI-powered job matching & scoring
+│   ├── module_3_alerts.py          # Configurable email alert system
+│   ├── module_4_dashboard.py       # Streamlit control panel
+│   └── utils/
+│       ├── error_handling.py       # Centralized error management
+│       ├── analytics.py            # Performance tracking
+│       └── testing_utils.py        # Module testing framework
+│
+├── 📁 data/                    # Data storage (CSV-based MVP)
+│   ├── accelerators_list.csv       # Master accelerator directory (170+ entries)
+│   ├── jobs_raw.csv                # Raw scraped job listings
+│   ├── jobs_scored.csv             # AI-scored job matches with reasoning
+│   ├── analytics_summary.csv       # Performance metrics & trends
+│   ├── system_logs.csv             # Error and execution logs
+│   └── test_results/               # Module testing outputs
+│
+├── 📁 config/                  # Configuration management
+│   ├── cmf_profile.json           # Your Candidate-Market Fit profile
+│   ├── alert_settings.json        # Email preferences & thresholds
+│   └── system_config.json         # API keys, module settings
+│
+├── 📁 ui/                      # User interfaces
+│   └── streamlit_app.py            # Interactive dashboard & analytics
+│
+├── 📁 analysis/                # Debugging & research tools
+│   ├── debug_job_scraper.py       # Troubleshoot scraping issues
+│   ├── validation_analysis.py     # Accelerator quality assessment
+│   └── enhanced_debugger.py       # Comprehensive diagnostic tool
+│
+├── 📁 tests/                   # Automated testing suite
+│   ├── test_modules.py             # Unit tests for all modules
+│   ├── integration_tests.py       # End-to-end workflow testing
+│   └── test_data/                  # Sample data for testing
+│
+├── venv/                       # Virtual environment (ignored)
+├── .env                        # API keys and secrets (ignored)
+├── .gitignore                  # Git ignore rules
+├── requirements.txt            # Python dependencies
+└── README.md                   # This documentation
 ```
 
 ---
 
-## 🧼 Hygiene Checklist
+## 🔄 Processing Pipeline
 
-Each time you return to this project, please perform the following checks to ensure a smooth workflow:
+### **Module 0: Accelerator Discovery** 🔍
+**Purpose:** Build comprehensive database of blockchain/climate/AI accelerators
 
-1.  **Activate Virtual Environment**: Make sure you are running commands within the project's isolated environment.
-    ```bash
-    source venv/bin/activate
-    ```
-2.  **Check Git Status**: See if there are any uncommitted changes.
-    ```bash
-    git status
-    ```
-3.  **Pull Latest Changes**: Ensure you have the latest version of the code from your repository.
-    ```bash
-    git pull origin main
-    ```
-4.  **Review Logs**: Check `data/system_logs.csv` for any errors or unexpected warnings from the last run.
-    ```bash
-    tail -n 50 data/system_logs.csv
-    ```
+**Process:**
+1. Execute targeted Google Custom Search queries
+2. Extract organization metadata (name, website, focus, location)
+3. Identify careers pages and tag by sector focus
+4. Deduplicate and normalize data
+
+**Testing Stage:**
+```bash
+python modules/module_0_directory.py --test
+# Expected output: 20+ new accelerators discovered
+# Validation: Check focus_tags accuracy, careers_url detection
+```
+
+**Success Criteria:**
+- ✅ 100+ relevant accelerators identified
+- ✅ 90%+ accurate focus tagging (blockchain/climate/AI)
+- ✅ Valid careers URLs for 80%+ of entries
 
 ---
 
-## 📈 Future Enhancements & Suggestions
+### **Module 0.5: Accelerator Validation** ✅
+**Purpose:** Filter to high-quality, actively hiring accelerators
 
-To increase the project's effectiveness, the following improvements are recommended:
+**Process:**
+1. Website health checks (response time, uptime)
+2. Careers page validation and job posting detection
+3. Activity scoring (1-10 scale) based on multiple factors
+4. Priority classification (high/medium/low) for scraping
 
-1.  **Expand and Prioritize Search Sources**: Add direct scraping or API integration for high-value job boards (e.g., Climatebase, Web3 Jobs, Wellfound) instead of relying solely on generic searches.
-2.  **Refine Filtering and Validation Logic**: Implement a scoring system to rank jobs based on how well they match the candidate profile, including roles, keywords, location, seniority, deal-breakers, and nice-to-haves.
-3.  **Automate Alerts and Tracking**: Create a notification system (e.g., email, Slack) for newly discovered, high-scoring jobs.
-4.  **Networking and Company Tracking**: Automate scraping of career pages and LinkedIn feeds for target organizations that may not post on general job boards.
-5.  **User Customization**: Make preferences in `cmf_profile.json` more dynamic and easier to update, perhaps through a simple UI.
-6.  **Testing and Validation**: Build a robust test suite in the `tests/` directory to unit test filtering logic, scrapers, and validation rules.
-7.  **Documentation**: Keep this README and code comments updated, especially when adding new modules or changing logic.
+**Testing Stage:**
+```bash
+python modules/module_0_5_validator.py --test
+# Expected output: 15-25 "active" status accelerators
+# Validation: Verify job_count accuracy, activity_score reasonableness
+```
 
-### Summary of Key Code/Logic Changes Needed
+**Success Criteria:**
+- ✅ 15+ accelerators classified as "active"
+- ✅ Job count estimates within 20% accuracy
+- ✅ Activity scores correlate with actual hiring activity
 
-To implement the suggestions above, the following changes are key:
-*   **Add direct scrapers/API clients** for top job boards.
-*   **Use a scoring/tagging system** in the validator for roles, industry, location, seniority, deal-breakers, and nice-to-haves.
-*   **Automate alerts and deduplication** of job listings.
-*   **Track company pages and LinkedIn** for unlisted roles.
-*   **Make preferences easily configurable**.
-*   **Add tests for your logic**. 
+---
+
+### **Module 1: Job Scraping** 🕷️
+**Purpose:** Extract job listings from validated accelerator sources
+
+**Process:**
+1. Smart platform detection (Greenhouse, Lever, Workday)
+2. Adaptive CSS selector system with fallbacks
+3. Job title validation and blockchain/climate relevance scoring
+4. Deduplication and metadata enrichment
+
+**Testing Stage:**
+```bash
+python modules/module_1_scraper.py --test
+# Expected output: 15-30 quality job listings
+# Validation: Check job_title relevance, URL validity, platform detection
+```
+
+**Success Criteria:**
+- ✅ 15+ valid job listings extracted
+- ✅ 90%+ job URLs are accessible
+- ✅ 70%+ job titles pass relevance validation
+
+---
+
+### **Module 2: AI Job Matching** 🎯
+**Purpose:** Score job relevance against CMF profile using AI
+
+**Process:**
+1. Load candidate profile and job requirements
+2. OpenAI GPT analysis for role-profile alignment
+3. Generate detailed scoring (1-10) with reasoning
+4. Extract key match factors and confidence levels
+
+**Testing Stage:**
+```bash
+python modules/module_2_matcher.py --test
+# Expected output: Jobs scored with detailed reasoning
+# Validation: Score consistency, reasoning quality, processing time
+```
+
+**Success Criteria:**
+- ✅ All jobs receive valid scores (1-10)
+- ✅ Reasoning explanations are substantive (>50 words)
+- ✅ Processing time <30 seconds per job
+
+---
+
+### **Module 3: Alert System** 📧
+**Purpose:** Deliver curated job matches via configurable email alerts
+
+**Process:**
+1. Filter jobs above configured score threshold
+2. Template generation with match reasoning
+3. Deduplication across time periods
+4. Email delivery with tracking and retry logic
+
+**Testing Stage:**
+```bash
+python modules/module_3_alerts.py --test
+# Expected output: Test email sent with sample jobs
+# Validation: Email formatting, link validity, delivery confirmation
+```
+
+**Success Criteria:**
+- ✅ Email successfully delivered to configured address
+- ✅ All job links in email are accessible
+- ✅ Email formatting renders correctly across clients
+
+---
+
+### **Module 4: Dashboard** 📊
+**Purpose:** Interactive analytics and system management interface
+
+**Process:**
+1. Real-time system health monitoring
+2. Job discovery trends and match analytics
+3. Module configuration and manual triggers
+4. Performance metrics visualization
+
+**Testing Stage:**
+```bash
+streamlit run ui/streamlit_app.py --test-mode
+# Expected output: Dashboard loads with sample data
+# Validation: All charts render, buttons functional, data accurate
+```
+
+**Success Criteria:**
+- ✅ Dashboard loads without errors
+- ✅ All interactive elements functional
+- ✅ Charts display accurate data from CSV files
+
+---
+
+## 🌍 Geographic & Sector Focus
+
+### **Target Regions:**
+- **Europe:** Berlin, London, Amsterdam, Zurich, Stockholm, Paris
+- **India:** Mumbai, Bangalore, Delhi, Hyderabad
+
+### **Sector Priorities:**
+1. **Blockchain/Web3:** DeFi, Infrastructure, Smart contracts, Crypto exchanges
+2. **Climate Tech:** Carbon markets, Renewable energy, Sustainability platforms
+3. **AI/ML:** Applied AI, Machine learning infrastructure, Data platforms
+
+### **Role Types:**
+- **Technical:** Engineers, Developers, Architects, Data Scientists
+- **Business:** Product Managers, Strategy, Partnerships, Business Development
+- **Leadership:** Directors, VPs, Heads of Department
+
+---
+
+## 🛠️ Environment Setup
+
+### Prerequisites
+- **Python 3.10** (recommended version)
+- **Git** for version control
+- **API Keys** for Google Custom Search and OpenAI (required for full functionality)
+
+### 1. Python 3.10 Installation
+- **macOS (Homebrew):**
+  ```bash
+  brew install python@3.10
+  python3.10 --version  # Should output: Python 3.10.x
+  ```
+- **Ubuntu/Debian:**
+  ```bash
+  sudo apt update
+  sudo apt install python3.10 python3.10-venv python3.10-dev
+  python3.10 --version
+  ```
+- **Windows:**
+  - Download Python 3.10 from [python.org](https://www.python.org/downloads/release/python-3100/)
+  - During installation, check "Add Python to PATH"
+  - Verify: `python --version` in Command Prompt
+
+### 2. Project Setup
+```bash
+git clone <your-repository-url>
+cd blockchain_job_tracker
+python3.10 -m venv venv
+# Activate venv:
+# macOS/Linux:
+source venv/bin/activate
+# Windows:
+venv\Scripts\activate
+python --version  # Should show Python 3.10.x
+```
+
+### 3. Install Dependencies
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+pip list | grep -E "(beautifulsoup4|requests|streamlit|pandas)"
+```
+
+### 4. Environment Variables Setup
+```bash
+cp .env.example .env  # If template exists, else create .env manually
+# Edit .env with your API keys and config
+```
+**Required .env variables:**
+- `GOOGLE_API_KEY`, `GOOGLE_CSE_ID` (Google Custom Search)
+- `OPENAI_API_KEY` (OpenAI)
+- Email config: `SMTP_SERVER`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`
+
+### 5. Configuration Setup
+```bash
+cp config/cmf_profile.example.json config/cmf_profile.json  # If template exists
+# Edit config/cmf_profile.json with your details
+```
+
+### 6. Verification & Testing
+```bash
+# Test Python and dependencies
+python -c "import requests, pandas, streamlit, bs4; print('✅ All dependencies loaded')"
+# Test environment variables
+python -c "from dotenv import load_dotenv; import os; load_dotenv(); print('✅ Google API Key loaded') if os.getenv('GOOGLE_API_KEY') else print('❌ Google API Key missing')"
+```
+
+### 7. Initial Test Run
+```bash
+python modules/module_0_directory.py --test
+# Should output: Found 20+ accelerators, data saved to data/accelerators_list.csv
+```
+
+---
+
+## 🚀 Quick Start Guide
+
+### **Initial Setup:**
+```bash
+# 1. Clone and navigate to project
+cd blockchain_job_tracker
+
+# 2. Set up virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Configure environment
+cp .env.example .env
+# Edit .env with your API keys (Google CSE, OpenAI)
+
+# 5. Configure your profile
+# Edit config/cmf_profile.json with your skills and preferences
+```
+
+### **Run Complete Pipeline:**
+```bash
+# Run all modules in sequence
+python -m modules.module_0_directory      # Discover accelerators
+python -m modules.module_0_5_validator    # Validate and score
+python -m modules.module_1_scraper        # Scrape job listings
+python -m modules.module_2_matcher        # AI-powered matching
+python -m modules.module_3_alerts         # Send email alerts
+
+# Or run with testing validation
+python run_pipeline.py --with-tests
+```
+
+### **Launch Dashboard:**
+```bash
+streamlit run ui/streamlit_app.py
+# Access at http://localhost:8501
+```
+
+---
+
+## 🧹 Development Hygiene Checklist
+
+Before each development session:
+
+1. **Activate Virtual Environment:**
+   ```bash
+   source venv/bin/activate
+   ```
+
+2. **Check Git Status:**
+   ```bash
+   git status
+   git pull origin main
+   ```
+
+3. **Review System Health:**
+   ```bash
+   tail -n 20 data/system_logs.csv
+   python -c "import modules.utils.analytics as a; a.system_health_check()"
+   ```
+
+4. **Run Module Tests:**
+   ```bash
+   python -m pytest tests/ -v
+   ```
+
+5. **Check Data Freshness:**
+   ```bash
+   ls -la data/*.csv  # Check last modified dates
+   wc -l data/jobs_raw.csv  # Verify job count
+   ```
+
+---
+
+## 📊 Success Metrics & KPIs
+
+### **Discovery Quality:**
+- **Coverage:** 100+ relevant accelerators in database
+- **Accuracy:** 90%+ "active" accelerators actually hiring
+- **Freshness:** New accelerators discovered weekly
+
+### **Job Matching Performance:**
+- **Volume:** 15-30 relevant jobs found per week
+- **Relevance:** 70%+ user satisfaction with top-scored matches
+- **Efficiency:** <10 minutes manual review time per week
+
+### **System Reliability:**
+- **Uptime:** 95%+ successful weekly pipeline runs
+- **Error Rate:** <5% module execution failures
+- **Response Time:** Complete pipeline execution <30 minutes
+
+### **User Experience:**
+- **Email Delivery:** 98%+ successful alert delivery
+- **Match Quality:** Average score >7.0 for delivered jobs
+- **Action Rate:** 20%+ of delivered jobs result in applications
+
+---
+
+## 🔧 Configuration Management
+
+### **Candidate Profile (config/cmf_profile.json):**
+```json
+{
+  "skills": ["blockchain", "web3", "defi", "smart contracts"],
+  "roles": ["senior engineer", "lead developer", "architect"],
+  "experience_level": "senior",
+  "location_preferences": ["remote", "berlin", "mumbai"],
+  "salary_range": {"min": 80000, "currency": "EUR"},
+  "deal_breakers": ["junior", "unpaid", "equity-only"],
+  "nice_to_haves": ["startup", "early-stage", "crypto-native"]
+}
+```
+
+### **Alert Settings (config/alert_settings.json):**
+```json
+{
+  "frequency": "weekly",
+  "min_score": 7.0,
+  "max_jobs_per_alert": 10,
+  "email": "your.email@example.com",
+  "sectors": ["blockchain", "climate"],
+  "include_trends": true
+}
+```
+
+---
+
+## 🔍 Debugging & Troubleshooting
+
+### **Common Issues:**
+
+**Issue: Module 1 finds 0 jobs**
+```bash
+python analysis/debug_job_scraper.py
+# This will diagnose CSS selector and scraping issues
+```
+
+**Issue: AI matching fails**
+```bash
+python modules/module_2_matcher.py --debug
+# Check OpenAI API connectivity and quota
+```
+
+**Issue: Email alerts not sending**
+```bash
+python modules/module_3_alerts.py --test-email
+# Verify SMTP configuration and credentials
+```
+
+### **Performance Monitoring:**
+```bash
+# View system analytics
+python -c "
+import pandas as pd
+df = pd.read_csv('data/analytics_summary.csv')
+print(df.tail(10))
+"
+
+# Check module execution times
+grep "execution time" data/system_logs.csv | tail -5
+```
+
+---
+
+## 🚀 Future Enhancements
+
+### **Phase 2 Improvements:**
+1. **Database Migration:** SQLite/PostgreSQL for better data management
+2. **Real-time Monitoring:** Slack/Telegram integration for instant alerts  
+3. **ML Improvements:** Custom matching models trained on feedback
+4. **API Development:** RESTful API for external integrations
+5. **Mobile App:** React Native companion for job alerts
+
+### **Advanced Features:**
+1. **Company Tracking:** Monitor specific organizations for new openings
+2. **Network Analysis:** LinkedIn integration for referral opportunities
+3. **Salary Intelligence:** Market rate analysis and negotiation insights
+4. **Application Tracking:** CRM-style application management
+5. **Interview Prep:** AI-powered interview question generation
+
+### **Scalability Considerations:**
+1. **Multi-user Support:** User accounts and personalized profiles
+2. **Cloud Deployment:** AWS/Google Cloud hosting with auto-scaling
+3. **Performance Optimization:** Redis caching and parallel processing
+4. **Data Pipeline:** Apache Airflow for production scheduling
+
+---
+
+## 📝 Contributing
+
+### **Development Workflow:**
+1. Create feature branch: `git checkout -b feature/new-module`
+2. Implement changes with tests: `python -m pytest tests/`
+3. Update documentation: Include testing stages and success criteria
+4. Submit pull request with performance metrics
+
+### **Code Standards:**
+- **Testing:** All modules must include testing stages and success criteria
+- **Logging:** Use structured logging for debugging and analytics
+- **Error Handling:** Implement retry logic and graceful degradation
+- **Documentation:** Update README and inline comments for new features
+
+---
+
+## 📄 License
+
+This project is developed for personal use in job discovery automation. See LICENSE file for details.
+
+---
+
+**Last Updated:** June 2025 | **Version:** 1.0.0 | **Status:** Active Development
