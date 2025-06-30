@@ -1,22 +1,101 @@
 {
   "candidate_info": {
     "experience_level": "senior",
-    "years_experience": "8"
+    "years_experience": "8-10"
   },
-  "preferred_roles": ["Chief of Staff", "Director of Strategy", "Grant Manager"],
+  "preferred_roles": [
+    "Chief of Staff",
+    "Director of Strategy",
+    "Program Manager",
+    "Partnerships Lead",
+    "Grant Manager"
+  ],
+  "role_flexibility": [
+    "Open to Head of Operations or Ecosystem roles"
+  ],
   "technical_skills": [
     "Blockchain for climate impact",
-    "Startup GTM",
-    "Community building", 
-    "Strategic leadership"
+    "Strategic GTM execution",
+    "Community building and governance",
+    "Grants and ecosystem development",
+    "Cross-sector partnership strategy"
   ],
-  "industries": ["Blockchain", "Climate Tech", "Sustainable Fashion"],
+  "soft_skills": [
+    "Cross-functional leadership",
+    "Stakeholder management",
+    "Strategic communication",
+    "Mentorship and team development",
+    "Change management"
+  ],
+  "industries": [
+    "Blockchain",
+    "Climate Tech",
+    "Regenerative Finance",
+    "Sustainable Fashion",
+    "Impact Investing"
+  ],
+  "impact_areas": [
+    "Climate adaptation and resilience",
+    "Decentralized governance for public goods",
+    "Carbon markets and MRV",
+    "Financial inclusion",
+    "Circular economy"
+  ],
+  "languages": [
+    "English (fluent)",
+    "Hindi (native)",
+    "French (conversational)"
+  ],
   "location_preferences": {
     "preferred": ["Mumbai", "Remote"],
-    "acceptable": ["India", "Europe", "North America"]
+    "acceptable": ["India", "Europe", "North America", "Africa"]
   },
-  "values": ["Autonomy", "Impact", "Frugality", "Fast execution"],
-  "company_stage": ["Series A", "Series B", "Growth"],
-  "deal_breakers": ["No remote option", "Pure technical role", "Corporate bureaucracy"],
-  "nice_to_have": ["Equity participation", "International team", "Climate focus"]
-} 
+  "relocation": {
+    "willing": false,
+    "notes": "Remote work preferred, no relocation"
+  },
+  "values": [
+    "Autonomy",
+    "Impact",
+    "Frugality",
+    "Fast execution",
+    "Mission-driven culture"
+  ],
+  "company_stage": {
+    "preferred": ["Early Stage", "Seed", "Series A"],
+    "acceptable": ["Series B", "Growth"]
+  },
+  "compensation": {
+    "min_salary": 60000,
+    "currency": "USD",
+    "equity": "yes",
+    "bonus": "nice_to_have"
+  },
+  "deal_breakers": [
+    "No remote option",
+    "Pure technical role",
+    "Corporate bureaucracy",
+    "Lack of mission alignment"
+  ],
+  "nice_to_have": [
+    "Equity participation",
+    "International team",
+    "Climate-focused product or DAO",
+    "Remote-first culture",
+    "Nonlinear career pathways"
+  ],
+  "work_environment": [
+    "Remote-first",
+    "Async communication",
+    "Flat hierarchy",
+    "Diverse and inclusive"
+  ],
+  "target_organizations": [
+    "Toucan Protocol",
+    "Celo Foundation",
+    "Gitcoin",
+    "Regen Network",
+    "KlimaDAO"
+  ]
+}
+  

@@ -214,22 +214,109 @@ class AcceleratorDirectoryBuilder:
         return 'Unknown'
     
     def get_blockchain_search_queries(self) -> List[str]:
-        """Generate targeted search queries for European and Indian blockchain accelerators"""
+        """Generate targeted search queries for climate x Web3 accelerators and job opportunities"""
         
-        # Base terms
-        base_terms = [
-            "blockchain accelerator",
-            "crypto startup accelerator", 
-            "web3 accelerator",
-            "blockchain incubator",
-            "defi accelerator"
+        # 🌱 Climate & Sustainability Base Terms
+        climate_terms = [
+            "climate tech jobs",
+            "sustainability job board",
+            "green startup jobs",
+            "climate startup hiring",
+            "climate tech hiring accelerator",
+            "jobs in clean energy startups",
+            "environmental impact jobs",
+            "nature tech jobs",
+            "carbon removal jobs",
+            "climate nonprofit jobs"
         ]
         
-        # European focus
-        european_queries = []
-        european_regions = ["Europe", "Berlin", "London", "Amsterdam", "Zurich", "Paris", "Stockholm"]
+        # 🔗 Blockchain / Web3 Base Terms
+        blockchain_terms = [
+            "blockchain startup jobs",
+            "web3 job board",
+            "crypto job portal",
+            "defi hiring accelerator",
+            "nft startup jobs",
+            "DAO jobs platform",
+            "smart contract developer jobs",
+            "web3 community manager jobs"
+        ]
         
-        for term in base_terms:
+        # 🤖 AI & Tech for Good Base Terms
+        ai_terms = [
+            "AI for climate jobs",
+            "ethical AI jobs",
+            "AI sustainability startup jobs",
+            "machine learning climate tech",
+            "AI for social impact jobs",
+            "AI governance job board",
+            "climate modeling data science jobs"
+        ]
+        
+        # 🧭 Cross-Sector Exploratory Terms
+        cross_sector_terms = [
+            "impact startup job board",
+            "climate + web3 jobs",
+            "regenerative finance job board",
+            "climate DAO hiring",
+            "remote climate tech jobs",
+            "series A climate startups hiring",
+            "early stage climate tech jobs"
+        ]
+        
+        # 🌍 Climate x Web3 High-Intent Queries
+        climate_web3_queries = [
+            "climate web3 jobs 2025",
+            "climate blockchain startup hiring",
+            "web3 for climate job openings",
+            "blockchain sustainability jobs remote",
+            "climate tech DAO hiring",
+            "climate DAO jobs 2025",
+            "climate impact DAO contributor roles"
+        ]
+        
+        # 🌱 Accelerator / Fellowship-Oriented Queries
+        accelerator_queries = [
+            "climate web3 fellowship program 2025",
+            "blockchain for climate fellowship India",
+            "regenerative finance jobs accelerator",
+            "climate crypto incubator program",
+            "ReFi startup accelerator 2025",
+            "climate impact + web3 fellowship application"
+        ]
+        
+        # 🇮🇳 India-Specific Queries
+        india_queries = [
+            "climate blockchain jobs India",
+            "web3 sustainability roles India",
+            "climate tech DAO India hiring",
+            "crypto climate jobs remote India",
+            "climate + blockchain startup hiring India"
+        ]
+        
+        # 📈 Venture / Series A Focused Queries
+        venture_queries = [
+            "climate web3 startup jobs Series A",
+            "ReFi jobs growth stage startups",
+            "early stage climate web3 hiring",
+            "climate x blockchain venture backed hiring"
+        ]
+        
+        # 🧑‍💻 Role-Specific Queries
+        role_specific_queries = [
+            "community lead ReFi job",
+            "smart contract developer climate tech",
+            "grant manager web3 climate",
+            "tokenomics strategist climate DAO",
+            "product manager blockchain for climate"
+        ]
+        
+        # European focus - combine with location-specific terms
+        european_queries = []
+        european_regions = ["Europe", "Berlin", "London", "Amsterdam", "Zurich", "Paris", "Stockholm", "Vienna", "Prague", "Copenhagen"]
+        
+        # Generate European queries for each category
+        for term in climate_terms + blockchain_terms + ai_terms + cross_sector_terms:
             for region in european_regions:
                 european_queries.extend([
                     f"{term} {region}",
@@ -237,11 +324,12 @@ class AcceleratorDirectoryBuilder:
                     f"{region} {term}"
                 ])
         
-        # Indian focus  
+        # Indian focus - combine with location-specific terms
         indian_queries = []
-        indian_cities = ["India", "Mumbai", "Bangalore", "Delhi", "Hyderabad"]
+        indian_cities = ["India", "Mumbai", "Bangalore", "Delhi", "Hyderabad", "Pune", "Chennai"]
         
-        for term in base_terms:
+        # Generate Indian queries for each category
+        for term in climate_terms + blockchain_terms + ai_terms + cross_sector_terms:
             for city in indian_cities:
                 indian_queries.extend([
                     f"{term} {city}",
@@ -249,18 +337,61 @@ class AcceleratorDirectoryBuilder:
                     f"{city} {term}"
                 ])
         
-        # Combine and deduplicate
-        all_queries = list(set(european_queries + indian_queries))
+        # Combine all query categories
+        all_queries = []
+        
+        # Add high-intent climate x Web3 queries
+        all_queries.extend(climate_web3_queries)
+        
+        # Add accelerator/fellowship queries
+        all_queries.extend(accelerator_queries)
+        
+        # Add India-specific queries
+        all_queries.extend(india_queries)
+        
+        # Add venture-focused queries
+        all_queries.extend(venture_queries)
+        
+        # Add role-specific queries
+        all_queries.extend(role_specific_queries)
+        
+        # Add location-specific queries
+        all_queries.extend(european_queries)
+        all_queries.extend(indian_queries)
         
         # Add some general high-value queries
         all_queries.extend([
-            "blockchain startup accelerator Europe",
-            "crypto venture accelerator India", 
-            "web3 incubator program 2024",
-            "blockchain accelerator program application"
+            "climate web3 startup accelerator Europe",
+            "blockchain sustainability accelerator India", 
+            "climate tech incubator program 2025",
+            "ReFi accelerator program application",
+            "climate DAO accelerator Europe",
+            "web3 climate impact accelerator India"
         ])
         
-        return all_queries[:20]  # Limit to 20 queries for MVP
+        # Remove duplicates and limit to reasonable number
+        unique_queries = list(set(all_queries))
+        
+        # Prioritize high-intent queries first, then location-specific
+        prioritized_queries = []
+        
+        # First: High-intent climate x Web3 queries
+        prioritized_queries.extend([q for q in unique_queries if any(term in q.lower() for term in ['climate web3', 'climate blockchain', 'refi', 'climate dao'])])
+        
+        # Second: Accelerator/fellowship queries
+        prioritized_queries.extend([q for q in unique_queries if any(term in q.lower() for term in ['accelerator', 'fellowship', 'incubator']) and q not in prioritized_queries])
+        
+        # Third: Role-specific queries
+        prioritized_queries.extend([q for q in unique_queries if any(term in q.lower() for term in ['developer', 'manager', 'strategist', 'lead']) and q not in prioritized_queries])
+        
+        # Fourth: Location-specific queries
+        prioritized_queries.extend([q for q in unique_queries if any(term in q.lower() for term in ['berlin', 'london', 'mumbai', 'bangalore', 'india', 'europe']) and q not in prioritized_queries])
+        
+        # Fifth: Remaining queries
+        remaining_queries = [q for q in unique_queries if q not in prioritized_queries]
+        prioritized_queries.extend(remaining_queries)
+        
+        return prioritized_queries[:30]  # Increased limit for comprehensive climate x Web3 search
     
     def save_accelerators_to_csv(self, accelerators: List[Dict]):
         """Save discovered accelerators to CSV file"""
