@@ -24,7 +24,8 @@ blockchain_job_tracker/
 │   ├── module_0_directory.py       # Accelerator discovery via Google CSE
 │   ├── module_0_5_validator.py     # Accelerator validation & health scoring
 │   ├── module_1_scraper.py         # Job scraping from validated sources
-│   ├── module_2_matcher.py         # AI-powered job matching & scoring
+│   ├── module_2_matcher.py         # AI-powered job matching & scoring (OpenAI)
+│   ├── module_2_matcher_anthropic.py # (Optional) AI matcher using Anthropic Claude
 │   ├── module_3_alerts.py          # Configurable email alert system
 │   ├── module_4_dashboard.py       # Streamlit control panel
 │   └── utils/
@@ -96,10 +97,12 @@ python modules/module_0_directory.py --test
 **Purpose:** Filter to high-quality, actively hiring accelerators
 
 **Process:**
-1. Website health checks (response time, uptime)
+1. Website health checks (response time, uptime, async/parallel supported with aiohttp)
 2. Careers page validation and job posting detection
 3. Activity scoring (1-10 scale) based on multiple factors
 4. Priority classification (high/medium/low) for scraping
+
+**Note:** For large accelerator lists, async validation is recommended. Ensure `aiohttp` is installed. You can also tune the timeout and batch size for best performance.
 
 **Testing Stage:**
 ```bash
@@ -266,7 +269,7 @@ python --version  # Should show Python 3.10.x
 ```bash
 pip install --upgrade pip
 pip install -r requirements.txt
-pip list | grep -E "(beautifulsoup4|requests|streamlit|pandas)"
+pip install aiohttp  # For async validation (Module 0.5)
 ```
 
 ### 4. Environment Variables Setup
@@ -274,10 +277,6 @@ pip list | grep -E "(beautifulsoup4|requests|streamlit|pandas)"
 cp .env.example .env  # If template exists, else create .env manually
 # Edit .env with your API keys and config
 ```
-**Required .env variables:**
-- `GOOGLE_API_KEY`, `GOOGLE_CSE_ID` (Google Custom Search)
-- `OPENAI_API_KEY` (OpenAI)
-- Email config: `SMTP_SERVER`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`
 
 ### 5. Configuration Setup
 ```bash
@@ -382,6 +381,13 @@ cat .env | grep -E "(OPENAI|GOOGLE)" | head -3
 python -c "from dotenv import load_dotenv; import os; load_dotenv(); print('OpenAI Key:', '✅' if os.getenv('OPENAI_API_KEY') else '❌')"
 ```
 
+#### **Issue: Validation (Module 0.5) is slow**
+```bash
+# Try the async version and ensure aiohttp is installed
+pip install aiohttp
+python modules/module_0_5_validator.py --async
+```
+
 ### **Current Project Status (Last Updated: June 2025)**
 
 #### **✅ Working Modules:**
@@ -408,6 +414,7 @@ python -c "from dotenv import load_dotenv; import os; load_dotenv(); print('Open
   - httpx==0.24.1 (compatibility fix)
   - pandas==2.1.4
   - requests==2.32.4
+  - aiohttp==3.12.13  # For async validation
 - **APIs**: Google CSE, OpenAI (quota-aware)
 
 ### **Next Development Steps**
@@ -445,7 +452,7 @@ git push origin main
 
 ---
 
-## �� Quick Start Guide
+## 🔄 Quick Start Guide
 
 ### **Initial Setup:**
 ```bash
