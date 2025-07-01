@@ -12,9 +12,9 @@ import smtplib
 import time
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
-from email.mime.text import MimeText
-from email.mime.multipart import MimeMultipart
-from email.mime.base import MimeBase
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
 from email import encoders
 import pandas as pd
 from jinja2 import Template
@@ -520,14 +520,14 @@ class EnhancedEmailAlerts:
         for attempt in range(max_retries):
             try:
                 # Create message
-                msg = MimeMultipart('alternative')
+                msg = MIMEMultipart('alternative')
                 msg['Subject'] = email_content['subject']
                 msg['From'] = self.email_config['from_email']
                 msg['To'] = self.alert_settings['email']['recipient']
                 
                 # Add text and HTML parts
-                text_part = MimeText(email_content['text_content'], 'plain', 'utf-8')
-                html_part = MimeText(email_content['html_content'], 'html', 'utf-8')
+                text_part = MIMEText(email_content['text_content'], 'plain', 'utf-8')
+                html_part = MIMEText(email_content['html_content'], 'html', 'utf-8')
                 
                 msg.attach(text_part)
                 msg.attach(html_part)
@@ -537,7 +537,7 @@ class EnhancedEmailAlerts:
                     csv_file = self.create_csv_attachment(jobs)
                     if csv_file and os.path.exists(csv_file):
                         with open(csv_file, 'rb') as f:
-                            part = MimeBase('application', 'octet-stream')
+                            part = MIMEBase('application', 'octet-stream')
                             part.set_payload(f.read())
                             encoders.encode_base64(part)
                             part.add_header(
@@ -657,13 +657,13 @@ class EnhancedEmailAlerts:
             }
             
             # Send test email without retries for faster testing
-            msg = MimeMultipart('alternative')
+            msg = MIMEMultipart('alternative')
             msg['Subject'] = test_content['subject']
             msg['From'] = self.email_config['from_email']
             msg['To'] = self.alert_settings['email']['recipient']
             
-            text_part = MimeText(test_content['text_content'], 'plain', 'utf-8')
-            html_part = MimeText(test_content['html_content'], 'html', 'utf-8')
+            text_part = MIMEText(test_content['text_content'], 'plain', 'utf-8')
+            html_part = MIMEText(test_content['html_content'], 'html', 'utf-8')
             
             msg.attach(text_part)
             msg.attach(html_part)
