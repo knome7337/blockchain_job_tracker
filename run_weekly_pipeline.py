@@ -25,7 +25,7 @@ class BlockchainJobPipeline:
         self.start_time = datetime.now()
         self.modules = {
             'module_0': 'modules/module_0_directory.py',
-            'module_0_5': 'modules/module_0_5_validator.py', 
+            'module_0_5': 'modules/module_0_5_validator_llm.py',
             'module_1': 'modules/module_1_scraper.py',
             'module_2': 'modules/module_2_matcher.py',
             'module_3': 'modules/module_3_alerts.py'

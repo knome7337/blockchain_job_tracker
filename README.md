@@ -270,6 +270,7 @@ python --version  # Should show Python 3.10.x
 pip install --upgrade pip
 pip install -r requirements.txt
 pip install aiohttp  # For async validation (Module 0.5)
+pip install schedule  # For background scheduling and pipeline automation
 ```
 
 ### 4. Environment Variables Setup
@@ -415,6 +416,7 @@ python modules/module_0_5_validator.py --async
   - pandas==2.1.4
   - requests==2.32.4
   - aiohttp==3.12.13  # For async validation
+  - schedule==1.2.2   # For background scheduling and pipeline automation
 - **APIs**: Google CSE, OpenAI (quota-aware)
 
 ### **Next Development Steps**
@@ -666,3 +668,5 @@ This project is developed for personal use in job discovery automation. See LICE
 ---
 
 **Last Updated:** June 2025 | **Version:** 1.0.0 | **Status:** Active Development
+
+**Note:** The pipeline now uses the LLM-enhanced validator (module_0_5_validator_llm.py) by default for validation. If you install new packages, always run `pip freeze > requirements.txt` to keep dependencies up to date.
