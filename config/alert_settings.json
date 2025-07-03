@@ -1,19 +1,22 @@
 {
-    "frequency": "weekly",
-    "min_score": 7.0,
-    "max_jobs": 10,
-    "sectors": ["blockchain", "climate", "ai"],
-    "locations": [],
-    "email": {
-      "recipient": "pranavlearning@gmail.com",
-      "subject_prefix": "🚀 Weekly Blockchain Jobs",
-      "include_trends": true,
-      "include_csv": true,
-      "include_reasoning": true
-    },
-    "filtering": {
-      "exclude_keywords": ["intern", "unpaid", "junior"],
-      "require_remote": false,
-      "min_confidence": "medium"
-    }
-  }
+  "frequency": "weekly",
+  "min_score": 6.7,
+  "max_jobs": 10,
+  "sectors": [
+    "blockchain",
+    "climate",
+    "ai"
+  ],
+  "locations": [],
+  "email": "{'recipient': 'pranavlearning@gmail.com', 'subject_prefix': '\ud83d\ude80 Weekly Blockchain Jobs', 'include_trends': True, 'include_csv': True, 'include_reasoning': True}",
+  "filtering": {
+    "exclude_keywords": [
+      "intern",
+      "unpaid",
+      "junior"
+    ],
+    "require_remote": false,
+    "min_confidence": "medium"
+  },
+  "max_jobs_per_alert": 10
+}
