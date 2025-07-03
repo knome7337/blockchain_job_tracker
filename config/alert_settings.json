@@ -8,7 +8,13 @@
     "ai"
   ],
   "locations": [],
-  "email": "{'recipient': 'pranavlearning@gmail.com', 'subject_prefix': '\ud83d\ude80 Weekly Blockchain Jobs', 'include_trends': True, 'include_csv': True, 'include_reasoning': True}",
+  "email": {
+    "recipient": "pranavlearning@gmail.com",
+    "subject_prefix": "🚀 Weekly Blockchain Jobs",
+    "include_trends": true,
+    "include_csv": true,
+    "include_reasoning": true
+  },
   "filtering": {
     "exclude_keywords": [
       "intern",
