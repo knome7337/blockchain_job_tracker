@@ -78,12 +78,57 @@ class AcceleratorDirectoryBuilder:
             raise ValueError("Missing Google API credentials. Please set GOOGLE_API_KEY and GOOGLE_CSE_ID in .env file")
         
         self.base_url = "https://www.googleapis.com/customsearch/v1"
-        self.accelerators_file = "data/accelerators_list.csv"
+        self.programs_file = "data/talent_programs_directory.csv"
+        
+        # Load discovery settings
+        self.discovery_settings = self.load_discovery_settings()
+        
         self.ensure_data_directory()
         
     def ensure_data_directory(self):
         """Create data directory if it doesn't exist"""
         os.makedirs("data", exist_ok=True)
+    
+    def load_discovery_settings(self) -> Dict:
+        """Load discovery configuration from JSON file"""
+        try:
+            settings_file = "config/discovery_settings.json"
+            if os.path.exists(settings_file):
+                with open(settings_file, 'r') as f:
+                    return json.load(f)
+            else:
+                logging.warning(f"Discovery settings file not found: {settings_file}. Using defaults.")
+                return self.get_default_discovery_settings()
+        except Exception as e:
+            logging.error(f"Failed to load discovery settings: {e}. Using defaults.")
+            return self.get_default_discovery_settings()
+    
+    def get_default_discovery_settings(self) -> Dict:
+        """Return default discovery settings if config file is missing"""
+        return {
+            "discovery_limits": {
+                "default_time_limit_minutes": 20,
+                "default_max_accelerators": 150,
+                "comprehensive_time_limit_minutes": 30,
+                "comprehensive_max_accelerators": 200,
+                "emergency_time_limit_minutes": 10,
+                "emergency_max_accelerators": 50
+            },
+            "rate_limiting": {
+                "delay_between_queries_seconds": 1,
+                "max_retries_per_query": 3,
+                "timeout_per_request_seconds": 10
+            },
+            "quality_filters": {
+                "min_query_results": 1,
+                "max_queries_per_session": 25,
+                "enable_deduplication": True
+            },
+            "logging": {
+                "log_progress_interval": 5,
+                "detailed_logging": True
+            }
+        }
         
     def safe_search(self, query: str, max_retries: int = 3) -> List[Dict]:
         """Safely execute Google Custom Search with retry logic"""
@@ -277,9 +322,9 @@ class AcceleratorDirectoryBuilder:
     def save_accelerators_to_csv(self, accelerators: List[Dict]):
         """Save discovered accelerators to CSV file"""
         try:
-            file_exists = os.path.exists(self.accelerators_file)
+            file_exists = os.path.exists(self.programs_file)
             
-            with open(self.accelerators_file, 'a', newline='', encoding='utf-8') as csvfile:
+            with open(self.programs_file, 'a', newline='', encoding='utf-8') as csvfile:
                 fieldnames = [
                     'Name', 'Website', 'Country', 'Focus_Tags', 'Careers_URL', 
                     'Notes', 'Discovery_Date', 'Status', 'Query_Source'
@@ -293,7 +338,7 @@ class AcceleratorDirectoryBuilder:
                     if accelerator:
                         writer.writerow(accelerator)
                         
-            logging.info(f"Saved {len(accelerators)} accelerators to {self.accelerators_file}")
+            logging.info(f"Saved {len(accelerators)} accelerators to {self.programs_file}")
             
         except Exception as e:
             logging.error(f"Failed to save accelerators to CSV: {e}")
@@ -301,13 +346,13 @@ class AcceleratorDirectoryBuilder:
     def deduplicate_accelerators(self):
         """Remove duplicate accelerators based on website URL"""
         try:
-            if not os.path.exists(self.accelerators_file):
+            if not os.path.exists(self.programs_file):
                 return
             
             seen_websites = set()
             unique_accelerators = []
             
-            with open(self.accelerators_file, 'r', encoding='utf-8') as csvfile:
+            with open(self.programs_file, 'r', encoding='utf-8') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
                     website = row.get('Website', '').strip().lower()
@@ -315,7 +360,7 @@ class AcceleratorDirectoryBuilder:
                         seen_websites.add(website)
                         unique_accelerators.append(row)
             
-            with open(self.accelerators_file, 'w', newline='', encoding='utf-8') as csvfile:
+            with open(self.programs_file, 'w', newline='', encoding='utf-8') as csvfile:
                 if unique_accelerators:
                     fieldnames = unique_accelerators[0].keys()
                     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -327,15 +372,35 @@ class AcceleratorDirectoryBuilder:
         except Exception as e:
             logging.error(f"Failed to deduplicate accelerators: {e}")
     
-    def discover_accelerators(self) -> int:
-        """Main method to discover climate x Web3 accelerators"""
-        logging.info("Starting optimized accelerator discovery...")
+    def discover_accelerators(self, time_limit_minutes: int = None, max_accelerators: int = None) -> int:
+        """Main method to discover climate x Web3 accelerators with safety limits"""
+        # Use config values if not specified
+        if time_limit_minutes is None:
+            time_limit_minutes = self.discovery_settings['discovery_limits']['default_time_limit_minutes']
+        if max_accelerators is None:
+            max_accelerators = self.discovery_settings['discovery_limits']['default_max_accelerators']
+            
+        logging.info(f"Starting optimized accelerator discovery...")
+        logging.info(f"Safety limits: {time_limit_minutes} minutes, max {max_accelerators} accelerators")
         
         queries = self.get_optimized_search_queries()
         total_found = 0
+        start_time = time.time()
+        time_limit_seconds = time_limit_minutes * 60
         
         for i, query in enumerate(queries, 1):
-            logging.info(f"Processing query {i}/{len(queries)}: {query}")
+            # Check time limit
+            elapsed_time = time.time() - start_time
+            if elapsed_time > time_limit_seconds:
+                logging.warning(f"⏰ Time limit of {time_limit_minutes} minutes reached. Stopping discovery.")
+                break
+            
+            # Check entry limit
+            if total_found >= max_accelerators:
+                logging.warning(f"📊 Entry limit of {max_accelerators} accelerators reached. Stopping discovery.")
+                break
+            
+            logging.info(f"Processing query {i}/{len(queries)}: {query} (Found: {total_found}, Time: {elapsed_time/60:.1f}m)")
             
             search_results = self.safe_search(query)
             
@@ -345,6 +410,11 @@ class AcceleratorDirectoryBuilder:
             
             accelerators = []
             for result in search_results:
+                # Check entry limit before processing each result
+                if total_found + len(accelerators) >= max_accelerators:
+                    logging.info(f"Entry limit reached while processing results. Stopping.")
+                    break
+                    
                 accelerator_info = self.extract_accelerator_info(result)
                 if accelerator_info:
                     accelerators.append(accelerator_info)
@@ -358,8 +428,30 @@ class AcceleratorDirectoryBuilder:
         
         self.deduplicate_accelerators()
         
-        logging.info(f"Discovery complete! Found {total_found} total accelerators")
+        final_time = (time.time() - start_time) / 60
+        logging.info(f"Discovery complete! Found {total_found} total accelerators in {final_time:.1f} minutes")
         return total_found
+
+    def run_comprehensive_discovery(self, time_limit_minutes: int = None, max_accelerators: int = None) -> int:
+        """Comprehensive discovery with extended limits for thorough search"""
+        # Use comprehensive config values if not specified
+        if time_limit_minutes is None:
+            time_limit_minutes = self.discovery_settings['discovery_limits']['comprehensive_time_limit_minutes']
+        if max_accelerators is None:
+            max_accelerators = self.discovery_settings['discovery_limits']['comprehensive_max_accelerators']
+            
+        logging.info("🚀 Starting comprehensive talent program discovery...")
+        logging.info(f"Comprehensive mode: {time_limit_minutes} minutes, max {max_accelerators} accelerators")
+        return self.discover_accelerators(time_limit_minutes, max_accelerators)
+    
+    def run_emergency_discovery(self) -> int:
+        """Emergency discovery with minimal limits for quick testing"""
+        time_limit = self.discovery_settings['discovery_limits']['emergency_time_limit_minutes']
+        max_accelerators = self.discovery_settings['discovery_limits']['emergency_max_accelerators']
+        
+        logging.info("🚨 Starting emergency discovery mode...")
+        logging.info(f"Emergency mode: {time_limit} minutes, max {max_accelerators} accelerators")
+        return self.discover_accelerators(time_limit, max_accelerators)
 
 
 def main():
@@ -370,7 +462,7 @@ def main():
         
         print(f"🎉 Discovery Complete!")
         print(f"Found {count} climate x Web3 accelerators")
-        print(f"Results saved to: {builder.accelerators_file}")
+        print(f"Results saved to: {builder.programs_file}")
         print(f"Logs saved to: data/system_logs.csv")
         
     except Exception as e:

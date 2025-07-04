@@ -195,6 +195,7 @@ python modules/module_3_alerts.py --test
 2. Job discovery trends and match analytics
 3. Module configuration and manual triggers
 4. Performance metrics visualization
+5. **File Management:** View, select, and delete user data files in the `data/` directory directly from the dashboard. Bulk delete files older than 30 days. Helps keep your workspace clean and prevents data bloat.
 
 **Testing Stage:**
 ```bash
@@ -207,6 +208,25 @@ streamlit run ui/streamlit_app.py --test-mode
 - ✅ Dashboard loads without errors
 - ✅ All interactive elements functional
 - ✅ Charts display accurate data from CSV files
+- ✅ File Management section allows safe cleanup of user data files
+
+---
+
+## 🧹 Maintenance & Cleanup Best Practices
+- Use the **File Management** section in the dashboard to delete old or unnecessary files in `data/`.
+- Regularly clean up `.DS_Store` and `__pycache__/` files (these are not needed for project operation).
+- Archive deprecated or backup modules/scripts in the `archive/` folder for clarity.
+- Trim large log files (e.g., keep only the last 1000 lines of `system_logs.csv`) to avoid performance issues.
+- Remove debug or temporary scripts (e.g., `debug_filtering.py`) when no longer needed.
+
+---
+
+## 📦 Archived & Deprecated Modules
+- The following modules have been archived for clarity and are no longer part of the active pipeline:
+  - `modules/module_0_5_validator_backup.py`
+  - `modules/module_0_5_validator_llm.py`
+  - `modules/module_2_matcher_anthropic.py`
+- These are now stored in the `archive/` folder. If you need to reference or restore them, move them back to `modules/`.
 
 ---
 
@@ -487,6 +507,24 @@ python -m modules.module_3_alerts         # Send email alerts
 
 # Or run with testing validation
 python run_pipeline.py --with-tests
+```
+
+### **Discovery Modes with Safety Limits:**
+```bash
+# Default mode (20 min, 150 max accelerators)
+python -c "from modules.module_0_directory import AcceleratorDirectoryBuilder; AcceleratorDirectoryBuilder().discover_accelerators()"
+
+# Comprehensive mode (30 min, 200 max accelerators)
+python -c "from modules.module_0_directory import AcceleratorDirectoryBuilder; AcceleratorDirectoryBuilder().run_comprehensive_discovery()"
+
+# Emergency mode (10 min, 50 max accelerators) - for quick testing
+python -c "from modules.module_0_directory import AcceleratorDirectoryBuilder; AcceleratorDirectoryBuilder().run_emergency_discovery()"
+
+# Custom limits
+python -c "from modules.module_0_directory import AcceleratorDirectoryBuilder; AcceleratorDirectoryBuilder().discover_accelerators(time_limit_minutes=15, max_accelerators=100)"
+
+# Test all modes
+python test_discovery_limits.py --test
 ```
 
 ### **Launch Dashboard:**

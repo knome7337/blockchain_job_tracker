@@ -36,7 +36,7 @@ class LLMEnhancedValidator:
     """Fast, intelligent accelerator validation using LLM + parallel processing"""
     
     def __init__(self):
-        self.accelerators_file = "data/accelerators_list.csv"
+        self.accelerators_file = "data/talent_programs_directory.csv"
         self.timeout = 5  # Reduced from 10s for speed
         self.user_agent = "Mozilla/5.0 (compatible; JobTracker/1.0)"
         
@@ -54,11 +54,93 @@ class LLMEnhancedValidator:
         self.validation_start = time.time()
         self.phase_times = {}
         
+        # --- Enhanced Filtering Criteria ---
+        self.INCLUDE_KEYWORDS = [
+            "accelerator", "fellowship", "incubator", "entrepreneur in residence", "eir", "program", "cohort"
+        ]
+        self.EXCLUDE_KEYWORDS = [
+            "blog", "event", "webinar", "investment", "fund", "news", "report", "summit",
+            "conference", "portfolio", "job board", "search", "remote", "representative",
+            "weather station", "strategy", "frequency", "announcement"
+        ]
+        self.EXCLUDE_DOMAINS = [
+            "republic.com", "lu.ma", "linkedin.com/posts", "gensler.com/blog", "weatherxm.com",
+            "thercursive.com", "eu-startups.com", "climatebase.org/job", "stripe.com/jobs"
+        ]
+    
     def log_phase_time(self, phase_name: str, start_time: float):
         """Track execution time for each phase"""
         duration = time.time() - start_time
         self.phase_times[phase_name] = duration
         logging.info(f"⏱️ {phase_name}: {duration:.1f}s")
+    
+    def get_domain(self, url):
+        try:
+            return urlparse(url).netloc.lower()
+        except Exception:
+            return ""
+    
+    def has_inclusion_signal(self, text):
+        text = text.lower()
+        return any(kw in text for kw in self.INCLUDE_KEYWORDS)
+    
+    def has_exclusion_signal(self, text):
+        text = text.lower()
+        return any(kw in text for kw in self.EXCLUDE_KEYWORDS)
+    
+    def is_domain_excluded(self, url):
+        domain = self.get_domain(url)
+        return any(excl in domain for excl in self.EXCLUDE_DOMAINS)
+    
+    def score_entry(self, title, url, description=""):
+        score = 0
+        reasons = []
+        title_l = title.lower()
+        url_l = url.lower()
+        desc_l = description.lower() if description else ""
+        # Positive signals
+        if self.has_inclusion_signal(title_l):
+            score += 1
+            reasons.append("inclusion_keyword_in_title")
+        if self.has_inclusion_signal(url_l):
+            score += 1
+            reasons.append("inclusion_keyword_in_url")
+        if description and self.has_inclusion_signal(desc_l):
+            score += 1
+            reasons.append("inclusion_keyword_in_description")
+        # Negative signals
+        if self.has_exclusion_signal(title_l):
+            score -= 1
+            reasons.append("exclusion_keyword_in_title")
+        if self.has_exclusion_signal(url_l):
+            score -= 1
+            reasons.append("exclusion_keyword_in_url")
+        if description and self.has_exclusion_signal(desc_l):
+            score -= 1
+            reasons.append("exclusion_keyword_in_description")
+        if self.is_domain_excluded(url):
+            score -= 2
+            reasons.append("excluded_domain")
+        return score, reasons
+    
+    def is_entry_valid(self, title, url, description=""):
+        score, reasons = self.score_entry(title, url, description)
+        # Require at least 2 positive signals and no strong negative
+        return score >= 2, reasons
+    
+    def rule_based_filter_accelerators(self, accelerators: List[Dict]) -> List[Dict]:
+        """Apply rule-based filtering before LLM pre-filtering."""
+        filtered_rows = []
+        for row in accelerators:
+            title = row.get("Name", "")
+            url = row.get("Website", "")
+            description = row.get("Notes", "")
+            valid, reasons = self.is_entry_valid(title, url, description)
+            row["filter_reason"] = ";".join(reasons)
+            if valid:
+                filtered_rows.append(row)
+        logging.info(f"🧹 Rule-based filter: {len(accelerators)} → {len(filtered_rows)} ({len(accelerators) - len(filtered_rows)} removed)")
+        return filtered_rows
     
     def llm_pre_filter_accelerators(self, accelerators: List[Dict]) -> List[Dict]:
         """Phase 1: Use LLM to quickly filter out obvious noise"""
@@ -445,8 +527,11 @@ RESPOND WITH ONLY JSON, NO OTHER TEXT.
         if not accelerators:
             return 0
         
+        # Rule-based Filtering (new phase)
+        rule_filtered_accelerators = self.rule_based_filter_accelerators(accelerators)
+        
         # Phase 1: LLM Pre-filtering (Fast, cheap noise removal)
-        valid_accelerators = self.llm_pre_filter_accelerators(accelerators)
+        valid_accelerators = self.llm_pre_filter_accelerators(rule_filtered_accelerators)
         
         # Phase 2: Parallel HTTP Validation (Fast network checks)
         validated_accelerators = self.parallel_http_validation(valid_accelerators)

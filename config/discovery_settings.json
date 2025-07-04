@@ -1,0 +1,24 @@
+{
+  "discovery_limits": {
+    "default_time_limit_minutes": 20,
+    "default_max_accelerators": 150,
+    "comprehensive_time_limit_minutes": 30,
+    "comprehensive_max_accelerators": 200,
+    "emergency_time_limit_minutes": 10,
+    "emergency_max_accelerators": 50
+  },
+  "rate_limiting": {
+    "delay_between_queries_seconds": 1,
+    "max_retries_per_query": 3,
+    "timeout_per_request_seconds": 10
+  },
+  "quality_filters": {
+    "min_query_results": 1,
+    "max_queries_per_session": 25,
+    "enable_deduplication": true
+  },
+  "logging": {
+    "log_progress_interval": 5,
+    "detailed_logging": true
+  }
+} 
