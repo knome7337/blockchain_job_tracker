@@ -43,7 +43,7 @@ class BlockchainJobPipeline:
                 [sys.executable, module_path],
                 capture_output=True,
                 text=True,
-                timeout=1800  # 30 minute timeout
+                timeout=2700  # 45 minute timeout
             )
             
             execution_time = time.time() - start_time
@@ -66,10 +66,10 @@ class BlockchainJobPipeline:
                 }
                 
         except subprocess.TimeoutExpired:
-            logging.error(f"⏰ {module_name} timed out after 30 minutes")
+            logging.error(f"⏰ {module_name} timed out after 45 minutes")
             return {
                 'status': 'timeout',
-                'execution_time': 1800,
+                'execution_time': 2700,
                 'output': '',
                 'error': 'Module execution timed out'
             }
